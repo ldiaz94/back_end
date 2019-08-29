@@ -14,6 +14,10 @@ from requests.exceptions import HTTPError, ConnectionError
 #       If either of the two form fields is missing, the server returns a 400 error page saying so.
 #   On a GET request to an existing short URI, it looks up the corresponding long URI and serves a redirect to it.
 #
+
+# DATABASE:
+db = {}
+
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -24,6 +28,29 @@ class RequestHandler(BaseHTTPRequestHandler):
                 self.wfile.write(line.encode())
 
     def do_POST(self):
+        # Get the length of the request for reading
+        qsLength = int(self.headers.get('Content-length',0))
+        
+        # Read the data and decode (bytes) from the request rfile
+        query = self.rfile.read(qsLength).decode()
+
+        # Form sends two fields: uri & shorty
+        parsedQuery = parse_qs(query)
+        uriData = parsedQuery.get('uri')
+        shortyData = parsedQuery.get('shorty')
+        if uriData:
+            if shortyData:
+                db[shortyData[0]] = uriData[0]
+            else:
+                # Add "Please enter valid short" error
+                pass
+        elif shortyData:
+            # Add "Please enter valid URI" error
+            pass
+        else:
+            # Add "Please enter valid URI" and "Please enter valid shorty"
+            pass
+        print(db)
         self.send_response(303)
         self.send_header('Location', '/')
         self.end_headers()
