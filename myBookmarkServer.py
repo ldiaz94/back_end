@@ -19,7 +19,10 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type','text/html; charset=UTF-8')
         self.end_headers()
-        self.wfile.write('<h1>HELLO</h1>'.encode())
+        with open('index.html', 'r') as file:
+            for line in file:
+                self.wfile.write(line.encode())
+
 
 if __name__ == "__main__":
     server_address = ('', 8000)
