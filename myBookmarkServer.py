@@ -14,3 +14,14 @@ from requests.exceptions import HTTPError, ConnectionError
 #       If either of the two form fields is missing, the server returns a 400 error page saying so.
 #   On a GET request to an existing short URI, it looks up the corresponding long URI and serves a redirect to it.
 #
+class RequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type','text/html; charset=UTF-8')
+        self.end_headers()
+        self.wfile.write('<h1>HELLO</h1>'.encode())
+
+if __name__ == "__main__":
+    server_address = ('', 8000)
+    httpd = HTTPServer(server_address, RequestHandler)
+    httpd.serve_forever()
