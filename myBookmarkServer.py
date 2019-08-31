@@ -11,7 +11,7 @@ from requests.exceptions import HTTPError, ConnectionError
 # DATABASE:
 db = {}
 # Placeholders
-ph = ['','','']
+ph = ['','','','']
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -66,7 +66,6 @@ class RequestHandler(BaseHTTPRequestHandler):
                 # First add schema if not in URI
                 if uriData[0].find("https://") !=0:
                     uriData[0] = "https://" + uriData[0]
-                    print(uriData[0])
                 # Then do a request for the uri
                 try:
                     response = requests.get(uriData[0])
@@ -90,7 +89,8 @@ class RequestHandler(BaseHTTPRequestHandler):
             # Add "Please enter valid URI" and "Please enter valid shorty"
             ph[2] = "<em style=\'color:red\'>No values entered</em>"
 
-        print(db)
+        for item in db:
+            ph[3] += "<br><a href={}>{}</a>: {}".format(db[item],item,db[item])
         self.send_response(303)
         self.send_header('Location', '/')
         self.end_headers()
