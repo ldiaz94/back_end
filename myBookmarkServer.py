@@ -17,14 +17,28 @@ from requests.exceptions import HTTPError, ConnectionError
 
 # DATABASE:
 db = {}
+# Placeholders
+ph = ['','','']
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
+        # Placeholder count
+        ph_count = 0
+
+        # Send response and header
         self.send_response(200)
         self.send_header('Content-type','text/html; charset=UTF-8')
         self.end_headers()
+
+        # Fetch index.html and substitute placeholders
         with open('index.html', 'r') as file:
             for line in file:
+                # Find python injection placeholders (can be refined)
+                ind = line.find('$P$')
+                if ind != -1:
+                    line = line[0:ind] + ph[ph_count] + line[ind+3:]
+                    ph_count += 1
+                
                 self.wfile.write(line.encode())
 
     def do_POST(self):
@@ -44,11 +58,12 @@ class RequestHandler(BaseHTTPRequestHandler):
             if shortyData:
                 # Check if uri is valid
                 try:
-                    response = requests.get(uri)
+                    response = requests.get(uriData[0])
                     if response.status_code == 200:
                         db[shortyData[0]] = uriData[0] #Only add when its a valid URI
+                        ph[3] = '<em style=\'color:red\'>{} succesfully added as {}</em>'.format(uriData[0],shortyData[0])
                 except:
-                    # Raise an error "enter valid URI"
+                    ph[0] = '<em style=\'color:red\'>Please enter a valid URI and bookmark</em>'
                     pass
             else:
                 # Add "Please enter valid short" error
