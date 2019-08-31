@@ -38,9 +38,18 @@ class RequestHandler(BaseHTTPRequestHandler):
         parsedQuery = parse_qs(query)
         uriData = parsedQuery.get('uri')
         shortyData = parsedQuery.get('shorty')
+        
+        # Check form's inputs
         if uriData:
             if shortyData:
-                db[shortyData[0]] = uriData[0]
+                # Check if uri is valid
+                try:
+                    response = requests.get(uri)
+                    if response.status_code == 200:
+                        db[shortyData[0]] = uriData[0] #Only add when its a valid URI
+                except:
+                    # Raise an error "enter valid URI"
+                    pass
             else:
                 # Add "Please enter valid short" error
                 pass
