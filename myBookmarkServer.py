@@ -37,6 +37,8 @@ class RequestHandler(BaseHTTPRequestHandler):
                 ind = line.find('$P$')
                 if ind != -1:
                     line = line[0:ind] + ph[ph_count] + line[ind+3:]
+                    # Reset ph
+                    ph[ph_count] = ''
                     ph_count += 1
                 
                 self.wfile.write(line.encode())
@@ -57,23 +59,30 @@ class RequestHandler(BaseHTTPRequestHandler):
         if uriData:
             if shortyData:
                 # Check if uri is valid
+                # First add schema if not in URI
+                if uriData[0].find("https://") !=0:
+                    uriData[0] = "https://" + uriData[0]
+                    print(uriData[0])
+                # Then do a request for the uri
                 try:
                     response = requests.get(uriData[0])
                     if response.status_code == 200:
                         db[shortyData[0]] = uriData[0] #Only add when its a valid URI
-                        ph[3] = '<em style=\'color:red\'>{} succesfully added as {}</em>'.format(uriData[0],shortyData[0])
-                except:
+                        ph[2] = '<em style=\'color:blue\'>{} succesfully added as {}</em>'.format(uriData[0],shortyData[0])
+                except: # Dangerous and needs FIXME!
                     ph[0] = '<em style=\'color:red\'>Please enter a valid URI and bookmark</em>'
-                    pass
             else:
                 # Add "Please enter valid short" error
-                pass
+                ph[1] = "<em style=\'color:red\'>Please enter a valid short</em>"
+                
         elif shortyData:
             # Add "Please enter valid URI" error
-            pass
+            ph[0] = "<em style=\'color:red\'>Please enter a URI</em>"
+            
         else:
             # Add "Please enter valid URI" and "Please enter valid shorty"
-            pass
+            ph[2] = "<em style=\'color:red\'>No values entered</em>"
+
         print(db)
         self.send_response(303)
         self.send_header('Location', '/')
