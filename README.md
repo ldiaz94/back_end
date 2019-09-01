@@ -1,5 +1,9 @@
 # Project Readme
 
+## UPDATE:
+An updated version can be seen live at:
+[Basic python bookmarking/URI shortening server](https://shortyuri.herokuapp.com/)
+
 ## This back-end project should meet the following requirements:
 
 * On a GET request to the / path, it displays an HTML form with two fields. One field is where you put the long URI you want to shorten. The other is where you put the short name you want to use for it. Submitting this form sends a POST to the server. 
